@@ -1,7 +1,7 @@
 from lexer.token import*
 
 class node:
-    def __init__(self, lit: token, *child) -> None:
+    def __init__(self, lit: token, *child, tag: str|None = None) -> None:
         self.lit = lit.lit
         self.type = lit.type
         self.child: list[node] = list(child)
