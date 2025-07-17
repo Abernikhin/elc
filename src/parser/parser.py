@@ -5,34 +5,60 @@ class parser:
         self.tokens = tokens
         self.result = []
     
-    def parsing(self):
+    def __call__(self):
         while len(self.tokens) > 0:
-            for i in range(self.module()):
-                self.tokens.pop(0)
+            self.result.append(self.rout(self.tokens))
         return self.result
     
-    def module(self, module: str = '', size = 0):
-        if self.tokens[0] == "module":
-            if module == '':
-                module += '::' + self.tokens[1].lit
-            size += 2
-            
-            tokens = []
-            if self.tokens[2] != '{':
-                raise RuntimeError("syntax error: exepted '{' after module")
-            for i in range(2, len(self.tokens)):
-                tokens.append(self.tokens[i])
-                if self.tokens[i] == ';':
+    def rout(self, stokens):
+        tokens = []
+        if stokens[0] == "let":
+            for i in range(1, len(stokens)):
+                tokens.append(stokens[i])
+                if stokens[i].lit == ';':
                     break
-            if tokens[-2] != '}':
-                raise RuntimeError("syntax error: exepted '}'")
-            size += len(tokens)
-            tokens.pop()
-            if tokens[-1] != ';':
-                raise RuntimeError("syntax error: exepted ';' after close module")
-            
-            n = node(self.tokens[1])
-            
-            self.result.append(node(self.tokens[0], n))
-            
-        return size
+            for i in range(len(tokens)+1):
+                self.tokens.pop(0)
+            return self.let(tokens)
+        
+        elif self.tokens[0] == "function":
+            pass
+
+    def let(self, tokens):
+        result = node(token("name", "let"))
+        expr = []
+        buf = []
+        for i in tokens:
+            if i == ";" or i == ',':
+                expr.append(buf)
+                buf = []
+                continue
+            buf.append(i)
+        
+        for i in expr:
+            n = node(token("name", "none"))
+            if i[1] == ':':
+                n = node(i[1], node(i[0]))
+                tp = []
+                for t in range(2, len(i)):
+                    if i[t] == '=':
+                        break
+                    tp.append(i[t])
+                for t in range(len(tp)+2):
+                    i.pop(0) # type: ignore
+                n.append(self.type(tp))
+            else:
+                n = node(token("op:", ':'), node(i[0]), node(token("name", "auto")))
+    
+            if len(i) == 0: # type: ignore
+                result.append(n)
+                continue
+        
+        return result
+    
+    def func(self, tokens):
+        pass
+
+    def type(self, tokens):
+        if len(tokens) == 1:
+            return node(tokens[0])

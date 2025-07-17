@@ -13,3 +13,8 @@ class node:
         if self.type == value:
             return True
         return False
+    
+    def info(self, c = 0):
+        print('  '*c+'|~ '+self.lit)
+        for i in self.child:
+            i.info(c+1)

@@ -14,3 +14,7 @@ class preproc:
                     continue
             result += i
         self.code = result
+
+    def __call__(self):
+        self.include()
+        return self.code

@@ -1,7 +1,1 @@
-#using util/math.e
-
-module std {
-    module ios {
-        
-    };
-};
+let num: long, dec: long;

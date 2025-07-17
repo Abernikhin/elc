@@ -14,7 +14,7 @@ class lexer():
             "number": r"(\d+)",
             "char": r"('.'|'\n')",
             "string": r"(\"[.\n]+\")",
-            "name": r"([\w\_]+[\d\w\_\:]*)",
+            "name": r"([\w\_]+[\d\w\_]*)",
             "open": r"(\()",
             "close": r"(\))",
             "sopen": r"(\[)",
@@ -45,7 +45,7 @@ class lexer():
         
         self.code = result
 
-    def tokenize(self) -> list[token]:
+    def __call__(self) -> list[token]:
         result: list[token] = []
         while 0 < len(self.code):
             for i in self.rules:
