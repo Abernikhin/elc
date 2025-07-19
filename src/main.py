@@ -31,6 +31,10 @@ def main(flags = []):
                     for i in temp4:
                         i.info()
                     continue
+    except RuntimeError:
+        t2 = time.time()
+        print(f"dump[1 in {t2-t1}]")
+        return 1
     except bdb.BdbQuit:
         t2 = time.time()
         print(f"dump[2 in {t2-t1}]")
