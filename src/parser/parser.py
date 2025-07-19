@@ -81,8 +81,28 @@ class parser:
         pass
 
     def type(self, tokens):
-        if len(tokens) == 1:
-            return node(tokens[0])
+        tokens = self.oc(tokens)
+        if type(tokens[0]) == list:
+            return self.union(tokens[0])
+        return node(tokens[0])
+
+    def union(self, tokens: list[token]):
+        buf = []
+        expr = []
+        #breakpoint()
+        tokens = self.oc(tokens)
+        for i in tokens:
+            if i == '|':
+                expr.append(buf)
+                buf = []
+                continue
+            buf.append(i)
+        expr.append(buf)
+        n = node(token("name", "union"))
+        for i in expr:
+            n.append(self.type(i))
+        
+        return n
 
     def oc(self, tokens):
         if len(tokens) == 1:

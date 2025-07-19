@@ -34,10 +34,10 @@ def main(flags = []):
     except KeyboardInterrupt:
         for i in etap3.tokens: # type: ignore
             print(i)
-    except RuntimeError:
-        t2 = time.time()
-        print(f"dump[1 in {t2-t1}]")
-        return 1
+    # except RuntimeError:
+    #     t2 = time.time()
+    #     print(f"dump[1 in {t2-t1}]")
+    #     return 1
     except bdb.BdbQuit:
         t2 = time.time()
         print(f"dump[2 in {t2-t1}]")
