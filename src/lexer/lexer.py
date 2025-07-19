@@ -45,7 +45,7 @@ class lexer():
         
         self.code = result
 
-    def tokenize(self) -> list[token]:
+    def __call__(self) -> list[token]:
         result: list[token] = []
         while 0 < len(self.code):
             for i in self.rules:
