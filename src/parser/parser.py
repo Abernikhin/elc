@@ -21,8 +21,23 @@ class parser:
                 self.tokens.pop(0)
             return self.let(tokens)
         
-        elif self.tokens[0] == "function":
+        elif stokens[0] == "function":
             pass
+        
+        elif stokens[0] == "import":
+            for i in range(1, len(stokens)):
+                if stokens[i].lit == ';':
+                    break
+                tokens.append(stokens[i])
+            for i in range(len(tokens)+2):
+                self.tokens.pop(0)
+            return self.import_module(tokens)
+    
+    def import_module(self, tokens):
+        e = ''
+        for i in tokens:
+            e += i.lit
+        return node(token("name", "import"), node(tokens[0]))
 
     def let(self, tokens):
         result = node(token("name", "let"))
@@ -100,6 +115,8 @@ class parser:
         return result
     
     def expr(self, tokens, mode = True):
+        if len(tokens) < 3:
+            return self.unary(tokens)
         index = 0
         tokens = self.oc(tokens) # type: ignore
         if mode:
@@ -126,6 +143,8 @@ class parser:
 
     
     def term(self, tokens, mode = True):
+        if len(tokens) < 3:
+            return self.unary(tokens)
         index = 0
         tokens = self.oc(tokens) # type: ignore
         if mode:
@@ -157,5 +176,5 @@ class parser:
                 if len(tokens[0]) == 1:
                     return node(tokens[0][0])
                 return self.expr(tokens[0])
-            return node(tokens[0])
-        return node(token("error", "error"))
+        return node(tokens[0])
+        # return node(token("error", "error"))

@@ -31,6 +31,9 @@ def main(flags = []):
                     for i in temp4:
                         i.info()
                     continue
+    except KeyboardInterrupt:
+        for i in etap3.tokens: # type: ignore
+            print(i)
     except RuntimeError:
         t2 = time.time()
         print(f"dump[1 in {t2-t1}]")

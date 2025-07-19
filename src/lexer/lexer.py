@@ -15,6 +15,7 @@ class lexer():
             "char": r"('.'|'\n')",
             "string": r"(\"[.\n]+\")",
             "name": r"([\w\_]+[\d\w\_]*)",
+            "dot": r"(\.)",
             "open": r"(\()",
             "close": r"(\))",
             "sopen": r"(\[)",
