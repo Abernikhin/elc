@@ -140,11 +140,11 @@ class parser:
                 tok = []
                 for t in range(index+1, len(tokens)):
                     tok.append(tokens[t])
-                n.append(self.expr(tok, False)) # type: ignore
+                n.append(self.expr(tok)) # type: ignore
                 tok = []
                 for t in range(0, index):
                     tok.append(tokens[t])
-                n.append(self.expr(tok, False)) # type: ignore
+                n.append(self.expr(tok)) # type: ignore
                 return n
             index += 1
         else:
