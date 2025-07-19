@@ -15,6 +15,6 @@ class node:
         return False
     
     def info(self, c = 0):
-        print('  '*c+'|~ '+self.lit)
+        print('   '*c+'|~ '+self.lit)
         for i in self.child:
             i.info(c+1)

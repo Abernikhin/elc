@@ -49,10 +49,16 @@ class parser:
                 n.append(self.type(tp))
             else:
                 n = node(token("op:", ':'), node(i[0]), node(token("name", "auto")))
-    
+
             if len(i) == 0: # type: ignore
                 result.append(n)
                 continue
+            
+            n = node(i[0], n)
+            i.pop(0)
+            n.append(self.expr(i))
+            result.append(n)
+            continue
         
         return result
     
@@ -62,3 +68,94 @@ class parser:
     def type(self, tokens):
         if len(tokens) == 1:
             return node(tokens[0])
+
+    def oc(self, tokens):
+        if len(tokens) == 1:
+            return tokens
+        result = []
+        buf  = []
+        index = 0
+        c = 0
+        while index < len(tokens):
+            i = tokens[index]
+            if i == '(' or i == '[':
+                if c != 0:
+                    buf.append(i)
+                c += 1
+            elif i == ')' or i == ']':
+                c -= 1
+                if c == 0:
+                    result.append(buf)
+                    buf = []
+                else:
+                    buf.append(i)
+                index += 1
+                continue
+            elif c != 0:
+                buf.append(i)
+            elif c == 0:
+                result.append(i)
+            index += 1
+            
+        return result
+    
+    def expr(self, tokens, mode = True):
+        index = 0
+        tokens = self.oc(tokens) # type: ignore
+        if mode:
+            tokens.reverse()
+        for i in tokens: # type: ignore
+            if type(i) == list:
+                index += 1
+                continue
+            if i in ['+', '-']:
+                n = node(i) # type: ignore
+
+                tok = []
+                for t in range(index+1, len(tokens)):
+                    tok.append(tokens[t])
+                n.append(self.expr(tok, False)) # type: ignore
+                tok = []
+                for t in range(0, index):
+                    tok.append(tokens[t])
+                n.append(self.expr(tok, False)) # type: ignore
+                return n
+            index += 1
+        else:
+            return self.term(tokens)
+
+    
+    def term(self, tokens, mode = True):
+        index = 0
+        tokens = self.oc(tokens) # type: ignore
+        if mode:
+            tokens.reverse()
+        for i in tokens: # type: ignore
+            if type(i) == list:
+                index += 1
+                continue
+            if i in ['*', '/']:
+                n = node(i) # type: ignore
+
+                tok = []
+                for t in range(index+1, len(tokens)):
+                    tok.append(tokens[t])
+                n.append(self.expr(tok, False)) # type: ignore
+                tok = []
+                for t in range(0, index):
+                    tok.append(tokens[t])
+                n.append(self.expr(tok, False)) # type: ignore
+                return n
+            index += 1
+        else:
+            return self.unary(tokens)
+
+    def unary(self, tokens):
+        # breakpoint()
+        if len(tokens) == 1:
+            if type(tokens[0]) == list:
+                if len(tokens[0]) == 1:
+                    return node(tokens[0][0])
+                return self.expr(tokens[0])
+            return node(tokens[0])
+        return node(token("error", "error"))

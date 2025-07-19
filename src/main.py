@@ -1,5 +1,6 @@
 import sys
 import time
+import bdb
 from preproc.preproc import*
 from lexer.lexer import*
 from parser.parser import*
@@ -30,9 +31,9 @@ def main(flags = []):
                     for i in temp4:
                         i.info()
                     continue
-    except:
+    except bdb.BdbQuit:
         t2 = time.time()
-        print(f"dump[1 in {t2-t1}]")
+        print(f"dump[2 in {t2-t1}]")
         return 1
     t2 = time.time()
     print(f"dump[0 in {t2-t1}]")

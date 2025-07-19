@@ -1,1 +1,1 @@
-let num: long, dec: long;
+let num: long, dec: long = ((34)+(45)+((56)+(67))*(37));
