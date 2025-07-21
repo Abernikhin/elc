@@ -143,7 +143,10 @@ class parser:
         n = node(tokens[0])
         tokens[1].append(token("semicolon", ';'))
         if len(tokens[1]) > 1:
-            args = node(token("name", "args"), self.let(tokens[1]))
+            a = self.let(tokens[1])
+            args = node(token("name", "args"))
+            for i in a.child:
+                args.append(i)
             n.append(args)
             if len(tokens) > 3:
                 r = node(tokens[2])
@@ -194,36 +197,6 @@ class parser:
                     buf.append(i)
                 c += 1
             elif i == ')' or i == ']':
-                c -= 1
-                if c == 0:
-                    result.append(buf)
-                    buf = []
-                else:
-                    buf.append(i)
-                index += 1
-                continue
-            elif c != 0:
-                buf.append(i)
-            elif c == 0:
-                result.append(i)
-            index += 1
-            
-        return result
-    
-    def fi(self, tokens):
-        if len(tokens) == 1:
-            return tokens
-        result = []
-        buf  = []
-        index = 0
-        c = 0
-        while index < len(tokens):
-            i = tokens[index]
-            if i == '{':
-                if c != 0:
-                    buf.append(i)
-                c += 1
-            elif i == '}':
                 c -= 1
                 if c == 0:
                     result.append(buf)
@@ -295,12 +268,17 @@ class parser:
         else:
             return self.unary(tokens)
 
-    def unary(self, tokens):
-        # breakpoint()
+    def unary(self, tokens: list[token]):
         if len(tokens) == 1:
             if type(tokens[0]) == list:
                 if len(tokens[0]) == 1:
                     return node(tokens[0][0])
                 return self.expr(tokens[0])
+        
+        tokens.reverse()
+        if len(tokens) == 2:
+            if tokens[0].type == "name":
+                if type(tokens[1]) == list:
+                    return node(tokens[0], self.expr(tokens[1]))
         return node(tokens[0])
         # return node(token("error", "error"))

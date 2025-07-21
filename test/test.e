@@ -1,9 +1,7 @@
-function main(int op) : void {
-    let num : int = 0;
-    main(op);
+function main(argc : int, argv : char) : int {
+    let num : int = pow(argc);
 }
 
-function pow(int op) : int {
-    let result : int = op * op;
-    return result;
+function pow(op : int) : int {
+    return op * op;
 }

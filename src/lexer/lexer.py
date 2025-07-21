@@ -11,7 +11,7 @@ class lexer():
             "skip": r"(\s+)",
             "ignore": r"//([.\\ ]*)",
             "float": r"(\d+\.\d+)",
-            "number": r"(\d+)",
+            "number": r"([123456789]\d+)",
             "char": r"('.'|'\n')",
             "string": r"(\"[.\n]+\")",
             "name": r"([\w\_]+[\d\w\_]*)",
