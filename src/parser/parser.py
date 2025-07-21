@@ -131,9 +131,17 @@ class parser:
         n = node(tokens[0])
         tokens[1].append(token("semicolon", ';'))
         if len(tokens[1]) > 1:
-            args = self.let(tokens[1])
-            for i in args.child:
-                n.append(i)
+            args = node(token("name", "args"), self.let(tokens[1]))
+            n.append(args)
+            if len(tokens) > 3:
+                r = node(tokens[2])
+                tp = []
+                for i in range(3, len(tokens)):
+                    tp.append(tokens[i])
+                r.append(self.type(tp))
+                n.append(r)
+            else:
+                n.append(node(token("op:", ":"), node(token("name", "void"))))
         return n
 
     def type(self, tokens):
