@@ -145,6 +145,8 @@ class parser:
         if len(tokens[1]) > 1:
             a = self.let(tokens[1])
             args = node(token("name", "args"))
+            for i in a.child:
+                args.append(i)
             n.append(args)
             if len(tokens) > 3:
                 r = node(tokens[2])
