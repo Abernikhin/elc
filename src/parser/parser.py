@@ -40,7 +40,7 @@ class parser:
                     i = node(token("name", "impl"))
                     while self.tokens[0] != '}':
                         i.append(self.rout(self.tokens, True))
-                    self.tokens.pop()
+                    self.tokens.pop(0)
                     n.append(i)
                         
                 return n
@@ -53,12 +53,52 @@ class parser:
             for i in range(len(tokens)+2):
                 self.tokens.pop(0)
             return self.import_module(tokens)
+        
+        elif stokens[0] == "return":
+            for i in range(0, len(stokens)):
+                if stokens[i].lit == ';':
+                    break
+                tokens.append(stokens[i])
+            for i in range(len(tokens)+1):
+                self.tokens.pop(0)
+            n = node(tokens[0])
+            tokens.pop(0)
+            n.append(self.expr(tokens))
+            return n
+        
+        elif stokens[1] == '(':
+            for i in range(len(stokens)):
+                if stokens[i].lit == ';':
+                    break
+                tokens.append(stokens[i])
+            for i in range(len(tokens)+1):
+                self.tokens.pop(0)
+
+            n = node(tokens[0])
+            tokens.pop(0)
+            expr = []
+            buf = []
+            tokens.pop(0)
+            tokens.pop()
+            for i in tokens:
+                if i == ',':
+                    expr.append(buf)
+                    buf = []
+                    continue
+                buf.append(i)
+            expr.append(buf)
+            for i in expr:
+                n.append(self.expr(i))
+            return n
+                   
+
+                
     
     def import_module(self, tokens):
         e = ''
         for i in tokens:
             e += i.lit
-        return node(token("name", "import"), node(tokens[0]))
+        return node(token("name", "import"), node(token("name", e))) # type: ignore
 
     def let(self, tokens):
         result = node(token("name", "let"))
@@ -103,9 +143,17 @@ class parser:
         n = node(tokens[0])
         tokens[1].append(token("semicolon", ';'))
         if len(tokens[1]) > 1:
-            args = self.let(tokens[1])
-            for i in args.child:
-                n.append(i)
+            args = node(token("name", "args"), self.let(tokens[1]))
+            n.append(args)
+            if len(tokens) > 3:
+                r = node(tokens[2])
+                tp = []
+                for i in range(3, len(tokens)):
+                    tp.append(tokens[i])
+                r.append(self.type(tp))
+                n.append(r)
+            else:
+                n.append(node(token("op:", ":"), node(token("name", "void"))))
         return n
 
     def type(self, tokens):
