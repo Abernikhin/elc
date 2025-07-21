@@ -10,7 +10,7 @@ class parser:
             self.result.append(self.rout(self.tokens))
         return self.result
     
-    def rout(self, stokens):
+    def rout(self, stokens, func_loc = False):
         tokens = []
         if stokens[0] == "let":
             for i in range(1, len(stokens)):
@@ -21,8 +21,29 @@ class parser:
                 self.tokens.pop(0)
             return self.let(tokens)
         
-        elif stokens[0] == "function":
-            pass
+        elif not func_loc:
+            if stokens[0] == "function":
+                is_impl = False
+                impl = []
+                for i in range(1, len(stokens)):
+                    if stokens[i].lit == ';':
+                        break
+                    if stokens[i].lit == '{':
+                        is_impl = True
+                        break
+                    tokens.append(stokens[i])
+                        
+                for i in range(len(tokens)+2):
+                    self.tokens.pop(0)
+                n = self.func(tokens)
+                if is_impl:
+                    i = node(token("name", "impl"))
+                    while self.tokens[0] != '}':
+                        i.append(self.rout(self.tokens, True))
+                    self.tokens.pop()
+                    n.append(i)
+                        
+                return n
         
         elif stokens[0] == "import":
             for i in range(1, len(stokens)):
@@ -78,7 +99,14 @@ class parser:
         return result
     
     def func(self, tokens):
-        pass
+        tokens = self.oc(tokens)
+        n = node(tokens[0])
+        tokens[1].append(token("semicolon", ';'))
+        if len(tokens[1]) > 1:
+            args = self.let(tokens[1])
+            for i in args.child:
+                n.append(i)
+        return n
 
     def type(self, tokens):
         tokens = self.oc(tokens)
@@ -118,6 +146,36 @@ class parser:
                     buf.append(i)
                 c += 1
             elif i == ')' or i == ']':
+                c -= 1
+                if c == 0:
+                    result.append(buf)
+                    buf = []
+                else:
+                    buf.append(i)
+                index += 1
+                continue
+            elif c != 0:
+                buf.append(i)
+            elif c == 0:
+                result.append(i)
+            index += 1
+            
+        return result
+    
+    def fi(self, tokens):
+        if len(tokens) == 1:
+            return tokens
+        result = []
+        buf  = []
+        index = 0
+        c = 0
+        while index < len(tokens):
+            i = tokens[index]
+            if i == '{':
+                if c != 0:
+                    buf.append(i)
+                c += 1
+            elif i == '}':
                 c -= 1
                 if c == 0:
                     result.append(buf)
