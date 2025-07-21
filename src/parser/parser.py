@@ -40,7 +40,7 @@ class parser:
                     i = node(token("name", "impl"))
                     while self.tokens[0] != '}':
                         i.append(self.rout(self.tokens, True))
-                    self.tokens.pop()
+                    self.tokens.pop(0)
                     n.append(i)
                         
                 return n
@@ -53,6 +53,18 @@ class parser:
             for i in range(len(tokens)+2):
                 self.tokens.pop(0)
             return self.import_module(tokens)
+        
+        elif stokens[0] == "return":
+            for i in range(0, len(stokens)):
+                if stokens[i].lit == ';':
+                    break
+                tokens.append(stokens[i])
+            for i in range(len(tokens)+1):
+                self.tokens.pop(0)
+            n = node(tokens[0])
+            tokens.pop(0)
+            n.append(self.expr(tokens))
+            return n
         
         elif stokens[1] == '(':
             for i in range(len(stokens)):
