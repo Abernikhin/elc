@@ -53,12 +53,40 @@ class parser:
             for i in range(len(tokens)+2):
                 self.tokens.pop(0)
             return self.import_module(tokens)
+        
+        elif stokens[1] == '(':
+            for i in range(len(stokens)):
+                if stokens[i].lit == ';':
+                    break
+                tokens.append(stokens[i])
+            for i in range(len(tokens)+1):
+                self.tokens.pop(0)
+
+            n = node(tokens[0])
+            tokens.pop(0)
+            expr = []
+            buf = []
+            tokens.pop(0)
+            tokens.pop()
+            for i in tokens:
+                if i == ',':
+                    expr.append(buf)
+                    buf = []
+                    continue
+                buf.append(i)
+            expr.append(buf)
+            for i in expr:
+                n.append(self.expr(i))
+            return n
+                   
+
+                
     
     def import_module(self, tokens):
         e = ''
         for i in tokens:
             e += i.lit
-        return node(token("name", "import"), node(tokens[0]))
+        return node(token("name", "import"), node(token("name", e))) # type: ignore
 
     def let(self, tokens):
         result = node(token("name", "let"))
