@@ -19,28 +19,18 @@ or
 let <name> = <value>;
 ```
 
-or you can declorate any quantity variable in one line
-
-```ts
-let <name>: <type>, num2 = <value>;
-```
-
 ## Function workflow 
-function declorate
-
-function header
-```ts
-function <name>(<arg list>);
-```
-
-or
+function prototiping
 
 ```ts
-function <name>(<arg list>) {
-    <impl>
-}
+function <name>(<args>);
 ```
-
-after (<arg list\>) you can print ': <type\>'
-
-and set return value
+```ts
+function <name>(<args>): <type>;
+```
+```ts
+function <name>;
+```
+```ts
+function <name>: <type>;
+```
