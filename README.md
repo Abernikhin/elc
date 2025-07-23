@@ -19,11 +19,6 @@ or
 let <name> = <value>;
 ```
 
-or you can declorate any quantity variable in one line
-
-```ts
-let <name>: <type>, num2 = <value>;
-```
 
 ## Function workflow 
 function declorate

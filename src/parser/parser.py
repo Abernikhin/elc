@@ -14,36 +14,25 @@ class parser:
         tokens = []
         if stokens[0] == "let":
             for i in range(1, len(stokens)):
-                tokens.append(stokens[i])
                 if stokens[i].lit == ';':
                     break
-            for i in range(len(tokens)+1):
+                tokens.append(stokens[i])
+            for i in range(len(tokens)+2):
                 self.tokens.pop(0)
             return self.let(tokens)
         
-        elif not func_loc:
-            if stokens[0] == "function":
-                is_impl = False
-                impl = []
-                for i in range(1, len(stokens)):
-                    if stokens[i].lit == ';':
-                        break
-                    if stokens[i].lit == '{':
-                        is_impl = True
-                        break
-                    tokens.append(stokens[i])
-                        
-                for i in range(len(tokens)+2):
-                    self.tokens.pop(0)
-                n = self.func(tokens)
-                if is_impl:
-                    i = node(token("name", "impl"))
-                    while self.tokens[0] != '}':
-                        i.append(self.rout(self.tokens, True))
-                    self.tokens.pop(0)
-                    n.append(i)
-                        
-                return n
+        if stokens[0] == "function":
+            for i in range(1, len(stokens)):
+                if stokens[i].lit == ';':
+                    break
+                if stokens[i].lit == '{':
+                    is_impl = True
+                    break
+                tokens.append(stokens[i])
+            for i in range(len(tokens)+2):
+                self.tokens.pop(0)
+                    
+            return self.func(tokens)
         
         elif stokens[0] == "import":
             for i in range(1, len(stokens)):
@@ -66,30 +55,30 @@ class parser:
             n.append(self.expr(tokens))
             return n
         
-        elif stokens[1] == '(':
-            for i in range(len(stokens)):
-                if stokens[i].lit == ';':
-                    break
-                tokens.append(stokens[i])
-            for i in range(len(tokens)+1):
-                self.tokens.pop(0)
+        # elif stokens[1] == '(':
+        #     for i in range(len(stokens)):
+        #         if stokens[i].lit == ';':
+        #             break
+        #         tokens.append(stokens[i])
+        #     for i in range(len(tokens)+1):
+        #         self.tokens.pop(0)
 
-            n = node(tokens[0])
-            tokens.pop(0)
-            expr = []
-            buf = []
-            tokens.pop(0)
-            tokens.pop()
-            for i in tokens:
-                if i == ',':
-                    expr.append(buf)
-                    buf = []
-                    continue
-                buf.append(i)
-            expr.append(buf)
-            for i in expr:
-                n.append(self.expr(i))
-            return n
+        #     n = node(token("name", "call"), node(tokens[0]))
+        #     tokens.pop(0)
+        #     expr = []
+        #     buf = []
+        #     tokens.pop(0)
+        #     tokens.pop()
+        #     for i in tokens:
+        #         if i == ',':
+        #             expr.append(buf)
+        #             buf = []
+        #             continue
+        #         buf.append(i)
+        #     expr.append(buf)
+        #     for i in expr:
+        #         n.append(self.expr(i))
+        #     return n
                    
 
                 
@@ -102,62 +91,72 @@ class parser:
 
     def let(self, tokens):
         result = node(token("name", "let"))
-        expr = []
-        buf = []
-        for i in tokens:
-            if i == ";" or i == ',':
-                expr.append(buf)
-                buf = []
-                continue
-            buf.append(i)
-        
-        for i in expr:
-            n = node(token("name", "none"))
-            if i[1] == ':':
-                n = node(i[1], node(i[0]))
-                tp = []
-                for t in range(2, len(i)):
-                    if i[t] == '=':
-                        break
-                    tp.append(i[t])
-                for t in range(len(tp)+2):
-                    i.pop(0) # type: ignore
-                n.append(self.type(tp))
-            else:
-                n = node(token("op:", ':'), node(i[0]), node(token("name", "auto")))
-
-            if len(i) == 0: # type: ignore
-                result.append(n)
-                continue
-            
-            n = node(i[0], n)
-            i.pop(0)
-            n.append(self.expr(i))
-            result.append(n)
-            continue
-        
-        return result
     
-    def func(self, tokens):
-        tokens = self.oc(tokens)
+        n = node(token("name", "none"))
+        if tokens[1] == ':':
+            n = node(tokens[1], node(tokens[0]))
+            tp = []
+            for t in range(2, len(tokens)):
+                if tokens[t] == '=':
+                    break
+                tp.append(tokens[t])
+            for t in range(len(tp)+2):
+                tokens.pop(0) # type: ignore
+            n.append(self.type(tp))
+        else:
+            n = node(token("op:", ':'), node(tokens[0]), node(token("name", "auto")))
+
+        if len(tokens) == 0: # type: ignore
+            return n
+        if tokens[0].type == "name":
+            tokens.pop(0)
+        n = node(tokens[0], n)
+        tokens.pop(0)
+        n.append(self.expr(tokens))
+        return node(token("name", "let"), n)
+    
+    def func(self, tokens: list):
         n = node(tokens[0])
-        tokens[1].append(token("semicolon", ';'))
-        if len(tokens[1]) > 1:
-            a = self.let(tokens[1])
-            args = node(token("name", "args"))
-            for i in a.child:
-                args.append(i)
-            n.append(args)
-            if len(tokens) > 3:
-                r = node(tokens[2])
-                tp = []
-                for i in range(3, len(tokens)):
-                    tp.append(tokens[i])
-                r.append(self.type(tp))
-                n.append(r)
-            else:
+        tokens.pop(0)
+        if len(tokens) == 0:
+            if len(tokens) == 0:
                 n.append(node(token("op:", ":"), node(token("name", "void"))))
-        return n
+                return node(token("name", "function"), n)
+        if tokens[0] == "(":
+            tokens.pop(0)
+            buf = []
+            args = node(token("op()", "()"))
+            for i in tokens.copy():
+                tokens.pop(0)
+                if i == ')':
+                    if buf != []:
+                        if len(buf) > 2:
+                            args.append(self.let(buf))
+                            buf = []
+                        else:
+                            args.append(node(buf[0]))
+                    break
+                if i == ',':
+                    if len(buf) > 2:
+                        args.append(self.let(buf))
+                        buf = []
+                    else:
+                        args.append(node(buf[0]))
+                    continue
+                buf.append(i)
+            n.append(args)
+            if len(tokens) == 0:
+                n.append(node(token("op:", ":"), node(token("name", "void"))))
+                return node(token("name", "function"), n)
+            if tokens[0] == ':':
+                n.append(node(token("op:", ":"), node(tokens[1])))
+                return node(token("name", "function"), n)
+        if tokens[0] == ':':
+            n.append(node(token("op:", ":"), node(tokens[1])))
+            return node(token("name", "function"), n)
+                
+                    
+        
 
     def type(self, tokens):
         tokens = self.oc(tokens)
@@ -239,7 +238,6 @@ class parser:
             index += 1
         else:
             return self.term(tokens)
-
     
     def term(self, tokens, mode = True):
         if len(tokens) < 3:
@@ -258,27 +256,15 @@ class parser:
                 tok = []
                 for t in range(index+1, len(tokens)):
                     tok.append(tokens[t])
-                n.append(self.expr(tok)) # type: ignore
+                n.append(self.expr(tok, False)) # type: ignore
                 tok = []
                 for t in range(0, index):
                     tok.append(tokens[t])
-                n.append(self.expr(tok)) # type: ignore
+                n.append(self.expr(tok, False)) # type: ignore
                 return n
             index += 1
         else:
             return self.unary(tokens)
-
-    def unary(self, tokens: list[token]):
-        if len(tokens) == 1:
-            if type(tokens[0]) == list:
-                if len(tokens[0]) == 1:
-                    return node(tokens[0][0])
-                return self.expr(tokens[0])
-        
-        tokens.reverse()
-        if len(tokens) == 2:
-            if tokens[0].type == "name":
-                if type(tokens[1]) == list:
-                    return node(tokens[0], self.expr(tokens[1]))
+    
+    def unary(self, tokens):
         return node(tokens[0])
-        # return node(token("error", "error"))
