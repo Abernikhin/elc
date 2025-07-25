@@ -167,7 +167,6 @@ class parser:
     def union(self, tokens: list[token]):
         buf = []
         expr = []
-        #breakpoint()
         tokens = self.oc(tokens)
         for i in tokens:
             if i == '|':
@@ -213,15 +212,20 @@ class parser:
         return result
     
     def expr(self, tokens, mode = True):
-        if len(tokens) < 3:
+        if 0 < len(tokens) < 3:
             return self.unary(tokens)
         index = 0
-        tokens = self.oc(tokens) # type: ignore
         if mode:
             tokens.reverse()
+        c = 0
         for i in tokens: # type: ignore
-            if type(i) == list:
-                index += 1
+            if i in ['(', ')']:
+                if c%2 == 0:
+                    c += 1
+                else:
+                    c -= 1
+                continue
+            if c != 0:
                 continue
             if i in ['+', '-']:
                 n = node(i) # type: ignore
@@ -240,14 +244,22 @@ class parser:
             return self.term(tokens)
     
     def term(self, tokens, mode = True):
-        if len(tokens) < 3:
+        if 0 < len(tokens) < 3:
             return self.unary(tokens)
         index = 0
-        tokens = self.oc(tokens) # type: ignore
         if mode:
             tokens.reverse()
+        c = 0
+        skip = False
         for i in tokens: # type: ignore
-            if type(i) == list:
+            if i in ['(', ')']:
+                if c%2 == 0:
+                    c += 1
+                else:
+                    c -= 1
+                index += 1
+                continue
+            if c != 0:
                 index += 1
                 continue
             if i in ['*', '/']:
@@ -266,5 +278,9 @@ class parser:
         else:
             return self.unary(tokens)
     
-    def unary(self, tokens):
+    def unary(self, tokens: list[token]):
+        if tokens[0] in ['(', ')']:
+            tokens.pop(0)
+            tokens.pop()
+            return self.expr(tokens)
         return node(tokens[0])

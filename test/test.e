@@ -1,2 +1,1 @@
-let num = 12;
-function main(int,char): int;
+let num = (13+12)*3;
