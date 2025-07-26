@@ -1,1 +1,1 @@
-let num = main(0, 3+123);
+let num = nums[(0+2)];

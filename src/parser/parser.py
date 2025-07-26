@@ -252,7 +252,7 @@ class parser:
         c = 0
         skip = False
         for i in tokens: # type: ignore
-            if i in ['(', ')']:
+            if i in ['(', ')', '[', ']']:
                 if c%2 == 0:
                     c += 1
                 else:
@@ -299,5 +299,13 @@ class parser:
                     n = node(tokens[0])
                     for i in expr:
                         n.append(self.expr(i))
-                    return node(token("name", '()'), n)
+                    return node(token("op()", '()'), n)
+                if tokens[1] in ['[', ']']:
+                    breakpoint()
+                    expr = []
+                    for i in range(2, len(tokens)-1):
+                        expr.append(tokens[i])
+                    n = node(tokens[0])
+                    n.append(self.expr(expr))
+                    return node(token("op[]", '[]'), n)
         return node(tokens[0])
