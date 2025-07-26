@@ -283,4 +283,21 @@ class parser:
             tokens.pop(0)
             tokens.pop()
             return self.expr(tokens)
+        if len(tokens) > 2:
+            if tokens[0].type == "name":
+                if tokens[1] in ['(', ')']:
+                    expr = []
+                    buf = []
+                    for i in range(2, len(tokens)-1):
+                        if tokens[i] == ',':
+                            expr.append(buf)
+                            buf = []
+                            continue
+                        buf.append(tokens[i])
+                    if buf != []:
+                        expr.append(buf)
+                    n = node(tokens[0])
+                    for i in expr:
+                        n.append(self.expr(i))
+                    return node(token("name", '()'), n)
         return node(tokens[0])

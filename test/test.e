@@ -1,1 +1,1 @@
-let num = (13+12)*3;
+let num = main(0, 3+123);
