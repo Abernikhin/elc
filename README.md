@@ -18,7 +18,6 @@ or
 ```ts
 let <name> = <value>;
 ```
-
 ## Function workflow 
 function prototiping
 
