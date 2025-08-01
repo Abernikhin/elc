@@ -1,1 +1,1 @@
-let num = nums[(0+2)];
+let num: size_t = ((1) + (1) + 12);

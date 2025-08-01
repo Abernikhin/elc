@@ -159,58 +159,9 @@ class parser:
         
 
     def type(self, tokens):
-        tokens = self.oc(tokens)
-        if type(tokens[0]) == list:
-            return self.union(tokens[0])
         return node(tokens[0])
-
-    def union(self, tokens: list[token]):
-        buf = []
-        expr = []
-        tokens = self.oc(tokens)
-        for i in tokens:
-            if i == '|':
-                expr.append(buf)
-                buf = []
-                continue
-            buf.append(i)
-        expr.append(buf)
-        n = node(token("name", "union"))
-        for i in expr:
-            n.append(self.type(i))
-        
-        return n
-
-    def oc(self, tokens):
-        if len(tokens) == 1:
-            return tokens
-        result = []
-        buf  = []
-        index = 0
-        c = 0
-        while index < len(tokens):
-            i = tokens[index]
-            if i == '(' or i == '[':
-                if c != 0:
-                    buf.append(i)
-                c += 1
-            elif i == ')' or i == ']':
-                c -= 1
-                if c == 0:
-                    result.append(buf)
-                    buf = []
-                else:
-                    buf.append(i)
-                index += 1
-                continue
-            elif c != 0:
-                buf.append(i)
-            elif c == 0:
-                result.append(i)
-            index += 1
-            
-        return result
     
+
     def expr(self, tokens, mode = True):
         if 0 < len(tokens) < 3:
             return self.unary(tokens)
@@ -250,8 +201,11 @@ class parser:
         if mode:
             tokens.reverse()
         c = 0
-        skip = False
+        skip = True
         for i in tokens: # type: ignore
+            if tokens[0] == '*' and skip:
+                skip = False
+                continue
             if i in ['(', ')', '[', ']']:
                 if c%2 == 0:
                     c += 1
@@ -262,29 +216,33 @@ class parser:
             if c != 0:
                 index += 1
                 continue
-            if i in ['*', '/']:
+            if i in ['*', '/', '%']:
                 n = node(i) # type: ignore
 
                 tok = []
                 for t in range(index+1, len(tokens)):
                     tok.append(tokens[t])
-                n.append(self.expr(tok, False)) # type: ignore
+                n.append(self.term(tok, False)) # type: ignore
                 tok = []
                 for t in range(0, index):
                     tok.append(tokens[t])
-                n.append(self.expr(tok, False)) # type: ignore
+                n.append(self.term(tok, False)) # type: ignore
                 return n
             index += 1
         else:
             return self.unary(tokens)
     
     def unary(self, tokens: list[token]):
+        if len(tokens) == 0:
+            return node(token("error", "error"))
         if tokens[0] in ['(', ')']:
             tokens.pop(0)
-            tokens.pop()
             return self.expr(tokens)
         if len(tokens) > 2:
             if tokens[0].type == "name":
+                if tokens[1] in ['.', '->']:
+                    if len(tokens) == 3:
+                        return node(tokens[1], node(tokens[0]), node(tokens[2]))
                 if tokens[1] in ['(', ')']:
                     expr = []
                     buf = []
@@ -301,7 +259,6 @@ class parser:
                         n.append(self.expr(i))
                     return node(token("op()", '()'), n)
                 if tokens[1] in ['[', ']']:
-                    breakpoint()
                     expr = []
                     for i in range(2, len(tokens)-1):
                         expr.append(tokens[i])
