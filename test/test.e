@@ -1,1 +1,1 @@
-let num: size_t = ((1) + (1) + 12);
+let num: (float)number;
