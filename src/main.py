@@ -5,6 +5,7 @@ import bdb
 from preproc.preproc import*
 from lexer.lexer import*
 from parser.parser import*
+from symantic.analiz import*
 
 
 def main(flags = []):
@@ -19,6 +20,8 @@ def main(flags = []):
         temp3 = etap2() # tokinaze
         etap3 = parser(temp3)
         temp4 = etap3() # parsing
+        etap4 = analizer(temp4)
+        temp4 = etap4()
         for i in flags:
             if i[0] == '-o':
                 out = i[1]
@@ -31,6 +34,10 @@ def main(flags = []):
                 if i[1] == 'ast':
                     for i in temp4:
                         i.info()
+                    continue
+                if i[1] == 'char':
+                    for i in etap4.char.vars:
+                        print(i)
                     continue
     except KeyboardInterrupt:
         t2 = time.time()

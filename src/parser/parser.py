@@ -33,7 +33,7 @@ class parser:
                 tokens.append(self.tokens[i])
             for i in range(len(tokens)+2):
                 self.tokens.pop(0)
-            return self.let(tokens)
+            return node(token("name", "let"), self.let(tokens))
 
     def let(self, tokens):
         n: node

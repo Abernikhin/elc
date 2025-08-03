@@ -10,7 +10,7 @@ class node:
         self.child.append(obj)
 
     def __eq__(self, value: str) -> bool: # type: ignore
-        if self.type == value:
+        if self.lit == value:
             return True
         return False
     

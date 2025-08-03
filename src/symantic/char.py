@@ -6,10 +6,16 @@ class char:
         self.funcs = []
     
     def add_var(self, branch: node):
-        if branch.lit == ":":
-            self.vars.append([branch.child[0].lit, branch.child[1].lit])
-        elif branch.lit == '=':
+        if branch.lit == '=':
             self.vars.append({"name": branch.child[0].child[0].lit, "type": branch.child[0].child[1].lit})
+            if branch.child[0].child[1].lit == 'auto':
+                if branch.child[1].type == 'number':
+                    self.vars[-1]["type"] = 'number'
+                if branch.child[1].type == 'char':
+                    self.vars[-1]["type"] = 'char'
+                if branch.child[1].type == 'float':
+                    self.vars[-1]["type"] = 'float'
+                        
     
     def add_func(self, branch: node):
         name = branch.lit
