@@ -1,4 +1,4 @@
-from parser.node import node, token
+from front.parser.node import node, token
 
 dark = 12
 

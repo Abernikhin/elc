@@ -2,11 +2,11 @@ import os
 import sys
 import time
 import bdb
-from preproc.preproc import*
-from lexer.lexer import*
-from parser.parser import*
-from symantic.analiz import*
-from ganare.python import*
+from front.preproc.preproc import*
+from front.lexer.lexer import*
+from front.parser.parser import*
+from midle.symantic.analiz import*
+from back.python.python import*
 
 def main(flags = []):
     t1 = time.time()

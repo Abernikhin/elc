@@ -1,9 +1,9 @@
-from parser.node import*
-from symantic.char import*
+from front.parser.node import*
+from midle.symantic.char import*
 
 class gc:
     def ganare(self, ast: list[node], t: char) -> str:
-        target = ""
+        target = "import util\n"
         for i in ast:
             if i == 'let':
                 obj = t[i.child[0].child[0].child[0].lit]

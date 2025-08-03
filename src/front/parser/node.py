@@ -1,4 +1,4 @@
-from lexer.token import*
+from front.lexer.token import*
 
 class node:
     def __init__(self, lit: token, *child, tag: str|None = None) -> None:

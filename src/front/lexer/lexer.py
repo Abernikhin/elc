@@ -1,5 +1,5 @@
 import re
-from lexer.token import token
+from front.lexer.token import token
 
 class wrong_token_error(Exception):
     pass

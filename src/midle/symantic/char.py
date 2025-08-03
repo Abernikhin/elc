@@ -1,4 +1,4 @@
-from parser.node import*
+from front.parser.node import*
 
 class char:
     def __init__(self) -> None:

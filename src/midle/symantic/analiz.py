@@ -1,4 +1,4 @@
-from symantic.char import*
+from midle.symantic.char import*
 
 class analizer:
     def __init__(self, ast):
