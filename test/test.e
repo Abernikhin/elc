@@ -1,1 +1,1 @@
-let num = *num;
+let num = sizeof(*num) + sizeof(&num);

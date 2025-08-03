@@ -1,5 +1,7 @@
 from parser.node import node, token
 
+dark = 12
+
 class token_list:
     def __init__(self, sig):
         self.sig = sig
@@ -93,7 +95,7 @@ class parser:
         return result
                 
 
-    def expr(self, tokens, rev = True):
+    def expr(self, tokens, rev = True, level = 0):
         index = -1
         tokens = self.parent(tokens)
         if rev:
@@ -124,6 +126,8 @@ class parser:
                     tok.append(tokens[i])
                 n.append(self.expr(tok, False))
                 return node(token("name", "call"), n)
+        else:
+            rev = False
         index = -1
         if not rev:
             tokens.reverse()
@@ -157,18 +161,20 @@ class parser:
                 return node(token("name", "call"), n)
         else:
             return self.factor(tokens)
-            
+        
 
     def factor(self, tokens):
-        # if len(tokens) == 0:
-        #     return node(token("name", "null"))
+        if len(tokens) == 0:
+            return node(token("name", "null"))
         if len(tokens) == 2:
                 if type(tokens[0]) == token:
                     if tokens[0].type == 'name':
                         if tokens[0] == 'sizeof':
                             return node(token("name", "call"), node(tokens[0], self.expr(tokens[1].e)))
                     if tokens[0] == '*':
-                        return node(token("name", "call"), node(token("name", "__naming"), self.expr(tokens[1].e)))
+                        return node(token("name", "call"), node(token("name", "__naming"), node(tokens[1])))
+                    if tokens[0] == '&':
+                        return node(token("name", "call"), node(token("name", "__addres"), node(tokens[1])))
         if type(tokens[0]) == token_list:
             if len(tokens) == 2:
                 if tokens[0].sig == 0:
