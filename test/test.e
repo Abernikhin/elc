@@ -1,1 +1,1 @@
-let num: (float)number;
+let num = *num;
