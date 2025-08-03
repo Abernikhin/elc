@@ -5,6 +5,12 @@ class char:
         self.vars = []
         self.funcs = []
     
+    def __getitem__(self, name):
+        for i in self.vars:
+            if i["name"] == name:
+                return i
+        
+    
     def add_var(self, branch: node):
         if branch.lit == '=':
             self.vars.append({"name": branch.child[0].child[0].lit, "type": branch.child[0].child[1].lit})

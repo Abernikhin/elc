@@ -12,4 +12,4 @@ class analizer:
     
     def __call__(self) -> list[node]:
         self.vars()
-        return self.ast
+        return self.char
