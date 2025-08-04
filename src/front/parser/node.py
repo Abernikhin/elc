@@ -8,6 +8,12 @@ class node:
     
     def append(self, obj):
         self.child.append(obj)
+    
+    def append_end(self, obj, index):
+        try:
+            self.child[index].append_end(obj, index)
+        except:
+            self.append(obj)
 
     def __eq__(self, value: str) -> bool: # type: ignore
         if self.lit == value:

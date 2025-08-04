@@ -11,7 +11,7 @@ class token_list:
         self.e.append(obj)
     
     def __getitem__(self, index):
-        return e[index]
+        return self.e[index]
 
 class parser:
     def __init__(self, tokens: list[token]) -> None:
@@ -171,10 +171,30 @@ class parser:
                     if tokens[0].type == 'name':
                         if tokens[0] == 'sizeof':
                             return node(token("name", "call"), node(tokens[0], self.expr(tokens[1].e)))
+                        if type(tokens[1]) == token_list:
+                            if tokens[1].sig == 0:
+                                n = node(token("name", "call"), node(tokens[0]))
+                                buf = []
+                                expr = []
+                                for i in tokens[1]:
+                                    if i == ',':
+                                        expr.append(buf)
+                                        buf = []
+                                        continue
+                                    buf.append(i)
+                                if buf != []:
+                                    expr.append(buf)
+                                for i in expr:
+                                    n.child[0].append(self.expr(i))
+                                
+                                return n
+
+
                     if tokens[0] == '*':
                         return node(token("name", "call"), node(token("name", "__naming"), node(tokens[1])))
                     if tokens[0] == '&':
                         return node(token("name", "call"), node(token("name", "__addres"), node(tokens[1])))
+                    
         if type(tokens[0]) == token_list:
             if len(tokens) == 2:
                 if tokens[0].sig == 0:
