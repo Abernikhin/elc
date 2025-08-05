@@ -1,7 +1,5 @@
 from front.parser.node import node, token
 
-dark = 12
-
 class token_list:
     def __init__(self, sig):
         self.sig = sig
@@ -34,6 +32,72 @@ class parser:
             for i in range(len(tokens)+2):
                 self.tokens.pop(0)
             return node(token("name", "let"), self.let(tokens))
+        if stokens[0] == "fun":
+            is_impl = False
+            impl = []
+            for i in range(1, len(stokens)):
+                if stokens[i].lit == ';':
+                    break
+                if stokens[i].lit == '{':
+                    is_impl = True
+                    break
+                tokens.append(stokens[i])
+                    
+            for i in range(len(tokens)+2):
+                self.tokens.pop(0)
+            n = self.fun(tokens)
+            if is_impl:
+                i = node(token("name", "impl"))
+                while self.tokens[0] != '}':
+                    i.append(self.rout(self.tokens, True))
+                self.tokens.pop()
+                n.append(i)
+                    
+            return node(token("name", "fun"), n)
+                
+        raise KeyboardInterrupt
+            
+
+    def type(self, tokens):
+        _type = ""
+        for i in tokens:
+            _type += i.lit
+        return node(token("name", _type))
+
+    def fun(self, tokens):
+        tokens = self.parent(tokens)
+        n = node(tokens[0])
+        args = node(token("name", "args"))
+        del tokens[0]
+        index = 0
+        for i in tokens:
+            if type(i) == token_list:
+                buf = []
+                expr = []
+                for a in i.e:
+                    if a == ',':
+                        expr.append(buf)
+                        buf = []
+                        continue
+                    buf.append(a)
+                if buf != []:
+                    expr.append(buf)
+                for a in expr:
+                    no_name = True
+                    for b in a:
+                        if b == ':':
+                            no_name = False
+                            break
+                    if no_name:
+                        args.append(self.type(a))
+                    else:
+                        args.append(node(a[1], node(a[0]), self.type(a[2:])))
+            elif i == ':':
+                n.append(node(i, node(tokens[index+1])))
+                break
+            index += 1
+        n.append(args)
+        return n
 
     def let(self, tokens):
         n: node
@@ -46,7 +110,7 @@ class parser:
                 buf.append(tokens[i])
             for i in range(len(buf)+2):
                 tokens.pop(0)
-            n.append(self.expr(buf))
+            n.append(self.type(buf))
             if len(tokens) == 0:
                 n = node(token('op=', '='), n, node(token("name", 'null')))
                 return n
@@ -61,6 +125,7 @@ class parser:
             tokens.pop(0)
             n.append(self.expr(tokens))
             return n
+
 
     def parent(self, tokens):
         result = []
@@ -93,8 +158,8 @@ class parser:
             result.append(i)
             index += 1
         return result
-                
 
+                
     def expr(self, tokens, rev = True, level = 0):
         index = -1
         tokens = self.parent(tokens)
@@ -199,8 +264,9 @@ class parser:
             if len(tokens) == 2:
                 if tokens[0].sig == 0:
                     if type(tokens[-1]) == token:
-                        if tokens[-1].type == "name":
-                            return node(token("name", "convert"), node(tokens[1]), self.expr(tokens[0].e))
+                        if tokens[-1].type == "name" and tokens[-1].type == "number":
+                            return node(token("name", "convert"), node(tokens[1]), self.type(tokens[0].e))
             if len(tokens) == 1:
                 return self.expr(tokens[0].e)
+            return self.expr(tokens[0].e)
         return node(tokens[0])

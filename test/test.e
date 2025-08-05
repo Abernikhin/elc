@@ -1,3 +1,2 @@
-let num = 12;
-let rel = 34.0;
-let sym = main(12);
+fun __add(number*, number): number;
+fun main(argc: number, argv: char**): number;

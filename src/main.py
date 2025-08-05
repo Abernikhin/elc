@@ -45,6 +45,8 @@ def main(flags = []):
                 if i[1] == 'char':
                     for i in etap4.char.vars:
                         print(i)
+                    for i in etap4.char.funcs:
+                        print(i)
                     continue
         if mode == "py":
             etap5 = gc()
@@ -75,6 +77,7 @@ load.pop(0)
 load_falgs.append(load[0])
 load.pop(0)
 buf = []
+
 for i in load:
     buf.append(i)
     if len(buf) == 2:

@@ -10,6 +10,11 @@ class analizer:
             if i == 'let':
                 self.char.add_var(i.child[0])
     
+    def funcs(self) -> None:
+        for i in self.ast:
+            if i == 'fun':
+                self.char.add_func(i.child[0])
+    
     def types(self) -> None:
         for i in self.ast:
             if i == 'let':
@@ -24,6 +29,10 @@ class analizer:
             return "char"
         if obj.lit == 'call':
             bin = self.char.at(obj.child[0].lit)
+            for i in obj.child[0].child:
+                self.get_type(i)
+                
+            print(obj.child[0].lit)
             return bin["type"]
                  
                 
@@ -31,4 +40,5 @@ class analizer:
     def __call__(self) -> list[node]:
         self.vars()
         self.types()
+        self.funcs()
         return self.char

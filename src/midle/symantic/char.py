@@ -2,8 +2,12 @@ from front.parser.node import*
 
 class char:
     def __init__(self) -> None:
-        self.vars = []
-        self.funcs = [{"name": 'main', "type": 'number', "args": []}]
+        self.vars = [
+            
+        ]
+        self.funcs = [
+            
+        ]
     
     def __getitem__(self, name):
         for i in self.vars:
@@ -33,7 +37,7 @@ class char:
         for i in branch.child:
             if i.lit == "args":
                 for c in i.child:
-                    args.append(c.child[1])
+                    args.append(c.lit)
             if i.lit == ":":
                 ret = i.child[0].lit
         

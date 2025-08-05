@@ -4,6 +4,8 @@ class node:
     def __init__(self, lit: token, *child, tag: str|None = None) -> None:
         self.lit = lit.lit
         self.type = lit.type
+        if type(self.lit) != str:
+            raise Exeption()
         self.child: list[node] = list(child)
     
     def append(self, obj):
