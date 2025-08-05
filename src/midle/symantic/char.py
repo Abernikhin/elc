@@ -29,6 +29,7 @@ class char:
     def add_var(self, branch: node):
         if branch.lit == '=':
             self.vars.append({"name": branch.child[0].child[0].lit, "type": branch.child[0].child[1].lit})
+            print("run", self.vars[-1])
     
     def add_func(self, branch: node):
         name = branch.lit
@@ -37,6 +38,9 @@ class char:
         for i in branch.child:
             if i.lit == "args":
                 for c in i.child:
+                    if c == ':':
+                        args.append(c.child[1].lit)
+                        continue
                     args.append(c.lit)
             if i.lit == ":":
                 ret = i.child[0].lit

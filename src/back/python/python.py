@@ -16,7 +16,7 @@ class gc:
         if obj == "call":
             result = f"{obj.child[0].lit}("
             for i in obj.child[0].child:
-                result += self.expr(i)
+                result += self.expr(i) + ", "
             result += ')'
             return result
         return obj.lit

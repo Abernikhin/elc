@@ -15,18 +15,13 @@ class analizer:
             if i == 'fun':
                 self.char.add_func(i.child[0])
     
-    def types(self) -> None:
-        for i in self.ast:
-            if i == 'let':
-                self.char[i.child[0].child[0].child[0].lit] = self.get_type(i.child[0].child[1])
-    
     def get_type(self, obj):
-        if obj.type == 'float':
-            return "float"
-        if obj.type == 'number':
-            return "number"
-        if obj.type == 'char':
-            return "char"
+        if 'float' in obj.lit:
+            return obj.lit
+        if 'numebr' in obj.lit:
+            return obj.lit
+        if 'char' in obj.lit:
+            return obj.lit
         if obj.lit == 'call':
             bin = self.char.at(obj.child[0].lit)
             for i in obj.child[0].child:
@@ -39,6 +34,5 @@ class analizer:
     
     def __call__(self) -> list[node]:
         self.vars()
-        self.types()
         self.funcs()
         return self.char
