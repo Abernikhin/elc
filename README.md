@@ -9,27 +9,29 @@ let <name>: <type>;
 
 or
 
-```ts
+```
 let <name>: <type> = <value>;
 ```
 
 or
 
-```ts
-let <name> = <value>;
 ```
-## Function workflow 
+let <name> = <value>; // default auto type
+```
+## Function workflow
+warning: functions havent auto set type
+
 function prototiping
 
-```ts
-function <name>(<args>);
 ```
-```ts
-function <name>(<args>): <type>;
+fun <name>(<args>);
 ```
-```ts
-function <name>;
 ```
-```ts
-function <name>: <type>;
+fun <name>(<args>): <type>;
+```
+```
+fun <name>;
+```
+```
+fun <name>: <type>;
 ```
